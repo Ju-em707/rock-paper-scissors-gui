@@ -2,7 +2,6 @@ package models;
 
 import interfaces.Displayable;
 
-import javax.swing.*;
 import java.awt.*;
 
 // Interface implementation, Encapsulation

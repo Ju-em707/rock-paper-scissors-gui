@@ -395,7 +395,7 @@ public class RPSGame extends JFrame {
         game.setUpSuddenDeath();
 
         JDialog dialog = new JDialog(this, "Sudden Death!", true);
-        dialog.setSize(500, 300);
+        dialog.setSize(500, 305);
         dialog.setLocationRelativeTo(this);
         dialog.setLayout(new BorderLayout(20, 20));
         dialog.getContentPane().setBackground(new Color(20, 20, 30));
