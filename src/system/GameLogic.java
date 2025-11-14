@@ -89,7 +89,9 @@ public class GameLogic {
 
         if (round == 5 && humanPlayer.getScore() == aiPlayer.getScore()) {
             gamePhase = "suddenDeath";
-        } else if (humanPlayer.getScore() == 3 || aiPlayer.getScore() == 3 || round == 5) {
+        } else if (humanPlayer.getScore() == 3 || aiPlayer.getScore() == 3 || (round >= 5 && !result.equalsIgnoreCase("tie"))) {
+            gamePhase = "gameOver";
+        } else if ((humanPlayer.getScore() > aiPlayer.getScore() || humanPlayer.getScore() < aiPlayer.getScore()) && round >= 5) {
             gamePhase = "gameOver";
         }
 

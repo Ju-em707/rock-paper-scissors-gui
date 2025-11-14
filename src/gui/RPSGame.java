@@ -6,14 +6,12 @@ import system.GameLogic;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class RPSGame extends JFrame {
-    private GameLogic game;
+    private final GameLogic game;
     private JPanel mainPanel;
     private CardLayout cardLayout;
 
@@ -24,8 +22,8 @@ public class RPSGame extends JFrame {
     private JButton playAgainButton;
     private JLabel scoreLabel;
     private JLabel roundLabel;
-    private List<JButton> shapeButtons;
-    private List<JButton> playerCardButtons;
+    private final List<JButton> shapeButtons;
+    private final List<JButton> playerCardButtons;
     private JButton confirmButton;
 
     public RPSGame() {
@@ -39,7 +37,6 @@ public class RPSGame extends JFrame {
         setLocationRelativeTo(null);
 
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             setIconImage(new ImageIcon("images/RPS-logo.png").getImage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -95,7 +92,7 @@ public class RPSGame extends JFrame {
         for (int i = 0; i < 20; i++) {
             JButton btn = createStyledButton("?", new Color(50, 50, 70));
             final int index = i;
-            btn.addActionListener(e -> handleShapeSelection(index, btn));
+            btn.addActionListener(_ -> handleShapeSelection(index, btn));
             shapeButtons.add(btn);
             gridPanel.add(btn);
         }
@@ -105,11 +102,12 @@ public class RPSGame extends JFrame {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
         bottomPanel.setOpaque(false);
 
-        confirmButton = createStyledButton("CONFIRM SELECTION (0/5)", new Color(46, 204, 113));
+        confirmButton = createStyledButton("CONFIRM SELECTION (0/5)", new Color(50, 50, 70));
+        confirmButton.setBackground(new Color(240, 235, 255));
         confirmButton.setFont(new Font("Monospaced", Font.BOLD, 15));
         confirmButton.setPreferredSize(new Dimension(300, 60));
         confirmButton.setEnabled(false);
-        confirmButton.addActionListener(e -> confirmSelection());
+        confirmButton.addActionListener(_ -> confirmSelection());
         bottomPanel.add(confirmButton);
 
         selectionPanel.add(bottomPanel, BorderLayout.SOUTH);
@@ -152,9 +150,9 @@ public class RPSGame extends JFrame {
         cardsPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
         for (int i = 0; i < 5; i++) {
-            JButton btn = createLargeCardButton("", Color.GRAY);
+            JButton btn = createLargeCardButton();
             final int index = i;
-            btn.addActionListener(e -> {
+            btn.addActionListener(_ -> {
                 btn.setBackground(btn.getBackground().darker().darker());
                 playCard(index);
             });
@@ -178,6 +176,7 @@ public class RPSGame extends JFrame {
         btn.setBackground(bgColor);
         btn.setForeground(Color.BLACK);
         btn.setFocusPainted(false);
+
         btn.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(bgColor.brighter(), 2),
                 BorderFactory.createEmptyBorder(15, 15, 15, 15)
@@ -187,15 +186,16 @@ public class RPSGame extends JFrame {
         return btn;
     }
 
-    private JButton createLargeCardButton(String text, Color bgColor) {
-        JButton btn = new JButton(text);
+    private JButton createLargeCardButton() {
+        JButton btn = new JButton("");
         btn.setFont(new Font("Monospaced", Font.BOLD, 48));
         btn.setPreferredSize(new Dimension(120, 160));
-        btn.setBackground(bgColor);
+        btn.setBackground(Color.GRAY);
         btn.setForeground(Color.BLACK);
         btn.setFocusPainted(false);
+
         btn.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(bgColor.brighter(), 3),
+                BorderFactory.createLineBorder(Color.GRAY.brighter(), 3),
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -210,7 +210,7 @@ public class RPSGame extends JFrame {
 
         for (JButton btn : shapeButtons) {
             btn.setText("?");
-            btn.setBackground(new Color(50, 50, 70));
+            btn.setBackground(new Color(200, 220, 243));
             btn.setEnabled(true);
         }
 
@@ -225,7 +225,7 @@ public class RPSGame extends JFrame {
 
         if (human.getSelectedIndices().contains(index)) {
             human.deselectIndex(index);
-            btn.setBackground(new Color(50, 50, 70));
+            btn.setBackground(new Color(200, 220, 243));
         } else {
             if (human.getSelectedIndices().size() < 5) {
                 human.selectIndex(index);
@@ -236,6 +236,13 @@ public class RPSGame extends JFrame {
         int selected = human.getSelectedIndices().size();
         confirmButton.setText("CONFIRM SELECTION (" + selected + "/5)");
         confirmButton.setEnabled(selected == 5);
+
+
+        if (confirmButton.isEnabled()) {
+            confirmButton.setBackground(new Color(46, 204, 113));
+        } else if (!confirmButton.isEnabled()) {
+            confirmButton.setBackground(new Color(240, 235, 255));
+        }
     }
 
     private void confirmSelection() {
@@ -311,8 +318,8 @@ public class RPSGame extends JFrame {
         bottomPanel.setOpaque(false);
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(0, 40, 30, 40));
 
-        String resultText = "";
-        Color resultColor = Color.WHITE;
+        String resultText;
+        Color resultColor;
         if (result.result().equals("human")) {
             resultText = "🎉 YOU WIN THIS ROUND! 🎉";
             resultColor = new Color(46, 204, 113);
@@ -332,7 +339,7 @@ public class RPSGame extends JFrame {
 
         JButton continueBtn = createStyledButton("CONTINUE", new Color(52, 152, 219));
         continueBtn.setPreferredSize(new Dimension(200, 50));
-        continueBtn.addActionListener(e -> {
+        continueBtn.addActionListener(_ -> {
             dialog.dispose();
             afterRound(cardIndex);
             continueBtn.setBackground(continueBtn.getBackground().darker().darker());
@@ -345,7 +352,7 @@ public class RPSGame extends JFrame {
 
         dialog.add(bottomPanel, BorderLayout.SOUTH);
 
-        Timer timer = new Timer(2000, e -> {
+        Timer timer = new Timer(2000, _ -> {
             if (dialog.isVisible()) {
                 continueBtn.doClick();
             }
@@ -503,16 +510,16 @@ public class RPSGame extends JFrame {
         playAgainButton = createStyledButton("PLAY AGAIN", new Color(52, 152, 219));
         playAgainButton.setFont(new Font("Monospaced", Font.BOLD, 24));
         playAgainButton.setPreferredSize(new Dimension(250, 70));
-        playAgainButton.addActionListener(e -> {
-            startGame();
-        });
+        playAgainButton.addActionListener(_ -> startGame());
         bottomPanel.add(playAgainButton);
 
         JButton exitButton = createStyledButton("EXIT", new Color(231, 76, 60));
         exitButton.setFont(new Font("Monospaced", Font.BOLD, 24));
         exitButton.setPreferredSize(new Dimension(250, 70));
-        exitButton.addActionListener(e -> System.exit(0));
+        exitButton.addActionListener(_ -> System.exit(0));
         bottomPanel.add(exitButton);
+
+        confirmButton.setBackground(new Color(240, 235, 255));
 
         resultPanel.add(bottomPanel, BorderLayout.SOUTH);
 
@@ -521,15 +528,6 @@ public class RPSGame extends JFrame {
 
         cardLayout.show(mainPanel, "result");
     }
-
-    private ImageIcon loadIcon(String resourcePath, int w, int h) {
-        java.net.URL res = getClass().getResource(resourcePath);
-        if (res == null) return null;
-        ImageIcon icon = new ImageIcon(res);
-        Image img = icon.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
-        return new ImageIcon(img);
-    }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
